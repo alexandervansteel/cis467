@@ -3,21 +3,42 @@ import numpy as np
 import os
 from random import shuffle
 
-TRAIN_DIR=''
+TRAIN_DIR='./KDEF/'
 TEST_DIR=''
 
 '''
-7 Basic Emotions:
-    anger
-    contempt
-    disgust
-    Fear
-    happy
-    sadness
-    suprise
-
+Letter 1: Session
+    A = series one
+    B = series two
+Letter 2: Gender
+    F = female
+    M = male
+Letter 3 & 4: Identity number
+    01 - 35
+Letter 5 & 6: Expression
+    NE = neutral
+    AF = afraid
+    AN = angry
+    DI = disgusted
+    HA = happy
+    SA = sad
+    SU = surprised
+Letter 7 & 8: Angle
+    FL = full left profile
+    HL = half left profile
+    S = straight
+    HR = half right profile
+    FR = full right profile
 '''
 def label_image(img):
+    word_label=img[4:7]
+    if word_label=='NE':return [1,0,0,0,0,0,0] # neurtral
+    if word_label=='AF':return [0,1,0,0,0,0,0] # afraid
+    if word_label=='AN':return [0,0,1,0,0,0,0] # angry
+    if word_label=='DI':return [0,0,0,1,0,0,0] # disgusted
+    if word_label=='HA':return [0,0,0,0,1,0,0] # happy
+    if word_label=='SA':return [0,0,0,0,0,1,0] # sad
+    if word_label=='SU':return [0,0,0,0,0,0,1] # surprised
 
 def create_train_data();
     training_data=[]
