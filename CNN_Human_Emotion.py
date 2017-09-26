@@ -40,7 +40,7 @@ def label_image(img):
     if word_label=='SA':return [0,0,0,0,0,1,0] # sad
     if word_label=='SU':return [0,0,0,0,0,0,1] # surprised
 
-def create_train_data();
+def create_train_data():
     training_data=[]
     for dirpath, dirname, filename in os.walk(TRAIN_DIR):
         for img in filename:
