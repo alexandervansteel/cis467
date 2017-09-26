@@ -47,7 +47,8 @@ def create_train_data();
             label=label_image(img)
             path=os.path.join(TRAIN_DIR,img)
             img=cv2.imread(path,CV_LOAD_IMAGE_GRAYSCALE)
-            training_data.append([np.array(img),np.array(label)])
+            if not img[6:9]=='FL' and not img[6:9]=='FR' : # remove full left and right images
+                training_data.append([np.array(img),np.array(label)])
 
     shuffle(training_data)
     np.save('train_data.npy',training_data)
