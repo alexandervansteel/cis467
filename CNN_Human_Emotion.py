@@ -58,3 +58,15 @@ def process_test_data():
     testing_data=[]
 
     return testing_data
+
+import tensorflow as tf
+import keras
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv3D, MaxPooling2D
+from keras import backend as K
+'''
+conv relu conv relu POOL conv relu conv relu POOL conv relu conv relu POOL FullConnected
+'''
+model=Sequential()
+model.add(Conv3D())
