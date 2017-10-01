@@ -7,6 +7,8 @@ TRAIN_DIR='./KDEF/'
 TEST_DIR=''
 
 '''
+Dimensions: 562 x 762
+
 Letter 1: Session
     A = series one
     B = series two
@@ -58,3 +60,35 @@ def process_test_data():
     testing_data=[]
 
     return testing_data
+
+import tensorflow as tf
+import keras
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D
+from keras import backend as K
+'''
+conv relu conv relu POOL conv relu conv relu POOL conv relu conv relu POOL FullConnected
+'''
+model=Sequential()
+
+model.add(Conv2D(32,(5,5),padding='same',activation='relu',input_shape=(1,562,762))) # adjust input_shape to size of images
+model.add(Conv2D(32, (5, 5), padding='same', activation='relu'))
+model.add(Conv2D(32, (5, 5), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+
+model.add(Flatten())
+
+model.add(Dense(128, activation='relu'))
+model.add(Dropout(.5))
+model.add(Dense(6, activation='softmax'))
