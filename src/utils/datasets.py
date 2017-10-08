@@ -6,14 +6,23 @@ import os
 import cv2
 
 class DataBaseManager(object):
-    def _init_(self,dataset_name='KDEF',dataset_path=None,image_size=(196,196)):
+    def __init__(self,dataset_name='KDEF',dataset_path=None,image_size=(48,48)):
+
         self.dataset_name=dataset_name
         self.dataset_path=dataset_path
         self.image_size=image_size
-        self.dataset_path='../datasets/KDEF/'
+        if self.dataset_path != None:
+            self.dataset_path=dataset_path
+        elif self.dataset_name=='KDEF':
+            self.dataset_path='../datasets/KDEF/'
+        else:
+            raise Exception('Incorrect dataset name')
 
     def get_data(self):
-        return self._load_KDEF()
+        if self.dataset_name=='KDEF':
+            ground_truth_data=self._load_KDEF()
+        return ground_truth_data
+
 
     def _load_KDEF(self):
         class_to_arg=get_class_to_arg(self.dataset_name)
@@ -30,7 +39,7 @@ class DataBaseManager(object):
         faces=np.zeros(shape=(num_faces,y_size,x_size))
         emotions=np.zeros(shape=(num_faces,num_classes))
         for file_arg, file_path in enumerate(file_paths):
-            image_array=cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+            image_array=cv2.imread(file_path,cv2.IMREAD_GRAYSCALE)
             image_array=cv2.resize(image_array,(y_size,x_size))
             faces[file_arg]=image_array
             file_basename=os.path.basename(file_path)
@@ -45,10 +54,26 @@ class DataBaseManager(object):
         return faces, emotions
 
 def get_labels(dataset_name):
-    return {0:'AN',1:'DI',2:'AF',3:'HA',4:'SA',5:'SU',6:'NE'}
+    if dataset_name=='KDEF':
+        return {0:'AN',1:'DI',2:'AF',3:'HA',4:'SA',5:'SU',6:'NE'}
+    else:
+        raise Exception('Invalid dataset name')
 
-def get_class_to_arg():
-    return {'AN':0,'DI':1,'AF':2,'HA':3,'SA':4,'SU':5,'NE':6}
+def get_class_to_arg(dataset_name='KDEF'):
+    if dataset_name=='KDEF':
+        return {'AN':0,'DI':1,'AF':2,'HA':3,'SA':4,'SU':5,'NE':6}
+    else:
+        raise Exception('Invalid dataset name')
+
+def split_imdb_data(ground_truth_data,validation_split=.2,do_shuffle=False):
+    ground_truth_keys=sorted(ground_truth_data.keys())
+    if do_shuffle==True:
+        shuffle(ground_truth_keys)
+    training_split=1-validation_split
+    num_train=int(training_split*len(ground_truth_keys))
+    train_keys=ground_truth_keys[:num_train]
+    validation_keys=ground_truth_keys[num_train:]
+    return train_keys, validation_keys
 
 def split_data(x,y,validation_split=.2):
     num_samples=len(x)
@@ -57,6 +82,6 @@ def split_data(x,y,validation_split=.2):
     train_y=y[:num_train_samples]
     val_x=x[num_train_samples:]
     val_y=y[num_train_samples:]
-    train_data=(train_x,train_y)
-    val_data=(val_x,val_y)
+    train_data=(train_x, train_y)
+    val_data=(val_x, val_y)
     return train_data, val_data
