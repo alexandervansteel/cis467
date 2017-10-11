@@ -8,7 +8,7 @@ SIZE = (640, 480)
 FILENAME = 'capture.png'
 
     
-def camstream(screen):
+def camstream(display, camera, screen):
     while True:
         screen = camera.get_image(screen)
         display.blit(screen, (0,0))
@@ -23,18 +23,22 @@ def camstream(screen):
     pygame.quit()
     return
 
-def getimage(screen):
+def getimage(camera, screen):
     scrncap = camera.get_image(screen)
     pygame.image.save(scrncap, 'working.jpg')
     return scrncap
 
-pygame.init()
-pygame.camera.init()
-display = pygame.display.set_mode(SIZE, 0)
-camera = pygame.camera.Camera(DEVICE, SIZE)
-camera.start()
-screen = pygame.surface.Surface(SIZE, 0, display)
-bgcam = Thread(target=camstream, args=(screen,))
-bgcam.start()
-print("main thread")
-getimage(screen)
+def init():
+    pygame.init()
+    pygame.camera.init()
+    display = pygame.display.set_mode(SIZE, 0)
+    camera = pygame.camera.Camera(DEVICE, SIZE)
+    camera.start()
+    screen = pygame.surface.Surface(SIZE, 0, display)
+    bgcam = Thread(target=camstream, args=(display, camera, screen,))
+    bgcam.start()
+    print("main thread")
+    getimage(camera, screen)
+
+if __name__ == "__main__":
+    init()
