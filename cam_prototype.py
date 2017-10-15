@@ -1,38 +1,52 @@
 import numpy as np
 import cv2
-import time
+import pygame
+import pygame.camera
+from pygame.locals import *
+from threading import Thread
+
+DEVICE = '/dev/video0'
+SIZE = (640, 480)
+FILENAME = 'capture.png'
 
 
-def takePicture(capture):
-    while(True):
-        # capture frame-by-frame
-        ret, frame = capture.read()
+# opens a camera stream displaying webcam. needed to keep camera 'hot'    
+def camstream(display, camera, screen):
+    while True:
+        screen = camera.get_image(screen)
+        display.blit(screen, (0,0))
+        pygame.display.flip()
+        pygame.image.save(screen, 'test.jpg')
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                capture = False
+            elif event.type == KEYDOWN and event.key == K_s:
+                pygame.image.save(screen, FILENAME)
+    camera.stop()
+    pygame.quit()
+    return
 
-        # our operations on the frame come here
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+# function lifts an image from the live webcam and saves, then reloads as
+# grayscale with opencv and returns that image. can change to just give file
+# name/path if needed for the cnn.
+def getimage(camera, screen):
+    scrncap = camera.get_image(screen)
+    pygame.image.save(scrncap, 'emotion.jpg')
+    image = cv2.imread('emotion.jpg',0)
+    return image
 
-        # display the resulting frame
-        im = cv2.imshow('frame', gray)
+# spawns thread for the webcam stream, camera.get_image is a blocking call
+def init():
+    pygame.init()
+    pygame.camera.init()
+    display = pygame.display.set_mode(SIZE, 0)
+    camera = pygame.camera.Camera(DEVICE, SIZE)
+    camera.start()
+    screen = pygame.surface.Surface(SIZE, 0, display)
+    bgcam = Thread(target=camstream, args=(display, camera, screen,))
+    bgcam.start()
+    print("main thread")
+    getimage(camera, screen)
 
-        # we dont have to write the image if we can pass it directly to the CNN
-        cv2.imwrite("test.jpg",gray,[int(cv2.IMWRITE_JPEG_QUALITY),100]) # writes image test.bmp to disk
-        print ("image saved")
-        if cv2.waitKey(1) & 0xff == ord('q'):
-            break
-        time.sleep(0.3)
-
-    # returns the image, not the written image jpeg
-    return im
-
-
-
-def main():
-    cap = cv2.VideoCapture(0)
-    takePicture(cap)
-    # when everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows
-    return 0
-
-
-if __name__ == "__main__":main()
+if __name__ == "__main__":
+    init()
