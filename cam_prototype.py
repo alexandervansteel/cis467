@@ -32,7 +32,8 @@ def camstream(display, camera, screen):
 def getimage(camera, screen):
     scrncap = camera.get_image(screen)
     pygame.image.save(scrncap, 'emotion.jpg')
-    image = cv2.imread('emotion.jpg',0)
+    image = cv2.imread('emotion.jpg')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return image
 
 # spawns thread for the webcam stream, camera.get_image is a blocking call
