@@ -52,7 +52,7 @@ def label_image(img):
     if word_label=='SA':return 5 # sad
     if word_label=='SU':return 6 # surprised
 
-def create_train_data();
+def create_train_data():
     training_data=[]
     for dirpath, dirname, filename in os.walk(TRAIN_DIR):
         for img in filename:
