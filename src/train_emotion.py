@@ -9,7 +9,7 @@ from utils.preprocessor import preprocess_input
 
 # parameters
 batch_size=32
-num_epochs=5
+num_epochs=1000
 input_shape=(192,192,1)
 validation_split=.2
 verbose=2
