@@ -12,8 +12,8 @@ from utils.dataloader import draw_text
 from utils.preprocessor import preprocess_input
 
 detection_model_path='../trained_models/detection_model/haarcascade_frontalface_default.xml'
-emotion_model_path='../trained_models/KDEF_models/KDEF_mini_XCEPTION.08-0.52.hdf5'
-emotion_labels=get_labels('KDEF')
+emotion_model_path='../trained_models/fer2013_models/fer2013_mini_XCEPTION.117-0.66.hdf5'
+emotion_labels=get_labels('fer2013')
 
 # hyper-parameters for bounding boxes shape
 frame_window=10
@@ -62,7 +62,8 @@ while True:
         except:
             continue
 
-    draw_text(face_coordinates,rgb_image,emotion_mode,0,-45,1,1)
+        draw_text(face_coordinates,rgb_image,emotion_mode,0,-45,1,1)
+
     bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('window_frame', bgr_image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
