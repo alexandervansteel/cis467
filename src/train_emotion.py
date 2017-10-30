@@ -9,8 +9,8 @@ from utils.preprocessor import preprocess_input
 
 # parameters
 batch_size=32
-num_epochs=5
-input_shape=(192,192,1)
+num_epochs=1000
+input_shape=(64,64,1)
 validation_split=.2
 verbose=2
 num_classes=7
@@ -31,7 +31,7 @@ model=mini_XCEPTION(input_shape,num_classes)
 model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
 model.summary()
 
-dataset_name='KDEF'
+dataset_name='fer2013'
 print('Training dataset: ',dataset_name)
 
 # callbacks
@@ -42,7 +42,7 @@ reduce_lr=ReduceLROnPlateau('val_loss',
                             factor=0.1,
                             patience=int(patience/4),
                             verbose=1)
-trained_models_path=base_path+'/'+dataset_name+'_models/'+dataset_name+'_mini_XCEPTION'
+trained_models_path=base_path+dataset_name+'_models/'+dataset_name+'_mini_XCEPTION'
 model_names=trained_models_path+'.{epoch:02d}-{val_acc:.2f}.hdf5'
 model_checkpoint=ModelCheckpoint(model_names,'val_loss',verbose=1,save_best_only=True)
 callbacks=[model_checkpoint,csv_logger,early_stop,reduce_lr]
