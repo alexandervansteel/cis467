@@ -88,7 +88,7 @@ def main():
                 messages.insert(INSERT, '%s\n' % msg[3:])
                 im = Image.open('../../emoImages/' + msg[3:] + '.gif')
                 tkimage = ImageTk.PhotoImage(im)
-                label.image = tkimage 
+                label.image = tkimage
                 label.config(image=tkimage)
                 label.pack(side=RIGHT)
 
@@ -101,7 +101,7 @@ def main():
                 label2.image = tkimage
                 label2.configure(image=tkimage)
                 label2.pack()
-            
+
             window.after(10, show_webcam)
 
 
@@ -111,7 +111,7 @@ def main():
             # label = Label(window, text=input_get)
             input_user.set('')
             # label.pack()
-            return "break"	
+            return "break"
 
         frame = Frame(window)  # , width=300, height=300)
         input_field.bind("<Return>", Enter_pressed)
@@ -201,8 +201,8 @@ def cnn_handler (cnn_img_queue, cnn_emo_queue):
     from utils.preprocessor import preprocess_input
 
     detection_model_path='../../trained_models/detection_model/haarcascade_frontalface_default.xml'
-    emotion_model_path='../../trained_models/KDEF_models/KDEF_mini_XCEPTION.08-0.52.hdf5'
-    emotion_labels=get_labels('KDEF')
+    emotion_model_path='../trained_models/fer2013_models/fer2013_XCEPTION.117-0.66.hdf5
+    emotion_labels=get_labels('fer2013')
 
     # hyper-parameters for bounding boxes shape
     frame_window=10

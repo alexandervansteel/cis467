@@ -2,7 +2,7 @@ from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 
-from models.cnn import mini_XCEPTION
+from models.cnn import XCEPTION
 from utils.datasets import DataBaseManager
 from utils.datasets import split_data
 from utils.preprocessor import preprocess_input
@@ -27,7 +27,7 @@ data_generator=ImageDataGenerator(featurewise_center=False,
                                   horizontal_flip=True)
 
 # create and compile model
-model=mini_XCEPTION(input_shape,num_classes)
+model=XCEPTION(input_shape,num_classes)
 model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
 model.summary()
 
@@ -42,7 +42,7 @@ reduce_lr=ReduceLROnPlateau('val_loss',
                             factor=0.1,
                             patience=int(patience/4),
                             verbose=1)
-trained_models_path=base_path+dataset_name+'_models/'+dataset_name+'_mini_XCEPTION'
+trained_models_path=base_path+dataset_name+'_models/'+dataset_name+'_XCEPTION'
 model_names=trained_models_path+'.{epoch:02d}-{val_acc:.2f}.hdf5'
 model_checkpoint=ModelCheckpoint(model_names,'val_loss',verbose=1,save_best_only=True)
 callbacks=[model_checkpoint,csv_logger,early_stop,reduce_lr]
