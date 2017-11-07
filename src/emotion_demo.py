@@ -12,7 +12,7 @@ from utils.dataloader import draw_text
 from utils.preprocessor import preprocess_input
 
 detection_model_path='../trained_models/detection_model/haarcascade_frontalface_default.xml'
-emotion_model_path='../trained_models/fer2013_models/fer2013_mini_XCEPTION.117-0.66.hdf5'
+emotion_model_path='../trained_models/fer2013_models/fer2013_XCEPTION.117-0.66.hdf5'
 emotion_labels=get_labels('fer2013')
 
 # hyper-parameters for bounding boxes shape

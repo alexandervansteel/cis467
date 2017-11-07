@@ -35,7 +35,7 @@ def base_cnn(input_shape,num_classes):
     model.add(Dense(num_classes,activation='softmax'))
     return model
 
-def mini_XCEPTION(input_shape,num_classes,l2_regularization=0.01):
+def XCEPTION(input_shape,num_classes,l2_regularization=0.01):
     regularization=l2(l2_regularization)
 
     # base
