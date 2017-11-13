@@ -1,9 +1,8 @@
-import queue
 from pygame.locals import *
 from tkinter import *
 from PIL import Image, ImageTk
 import socket
-import threading
+import multiprocessing
 import sys
 import os
 import signal
@@ -29,6 +28,7 @@ def killed_signal(signal, frame):
 
 def main():
     value = True
+    jobs = []
     while value:
         server_ip = get_input("IP: ")
         port_num = get_input("Port: ")
@@ -40,21 +40,21 @@ def main():
         # queues allow communication between main thread and GUI
         # gui_queue sends data from the client to the gui thread
         # client_queue sends data from the gui back to the client
-        gui_queue = queue.Queue()
-        client_queue = queue.Queue()
-        cnn_emo_queue = queue.Queue()
-        cnn_img_queue = queue.Queue()
+        gui_queue = multiprocessing.Queue()
+        client_queue = multiprocessing.Queue()
+        cnn_emo_queue = multiprocessing.Queue()
+        cnn_img_queue = multiprocessing.Queue()
 
-        server = threading.Thread(target=server_handler, args=(s,gui_queue))
-        server.daemon = True
+        server = multiprocessing.Process(target=server_handler, args=(s,gui_queue))
+        jobs.append(server)
         server.start()
 
-        message = threading.Thread(target=message_handler, args=(s,client_queue, cnn_emo_queue))
-        message.daemon = True
+        message = multiprocessing.Process(target=message_handler, args=(s,client_queue, cnn_emo_queue))
+        jobs.append(message)
         message.start()
 
-        cnn =  threading.Thread(target=cnn_handler, args=(cnn_img_queue,cnn_emo_queue))
-        cnn.daemon = True
+        cnn =  multiprocessing.Process(target=cnn_handler, args=(cnn_img_queue,cnn_emo_queue))
+        jobs.append(cnn)
         cnn.start()
 
         window = Tk()
@@ -201,7 +201,7 @@ def cnn_handler (cnn_img_queue, cnn_emo_queue):
     from utils.preprocessor import preprocess_input
 
     detection_model_path='../../trained_models/detection_model/haarcascade_frontalface_default.xml'
-    emotion_model_path='../trained_models/fer2013_models/fer2013_XCEPTION.117-0.66.hdf5
+    emotion_model_path='../../trained_models/fer2013_models/fer2013_XCEPTION.117-0.66.hdf5'
     emotion_labels=get_labels('fer2013')
 
     # hyper-parameters for bounding boxes shape
