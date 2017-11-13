@@ -29,6 +29,7 @@ def killed_signal(signal, frame):
 def main():
     value = True
     jobs = []
+    lock = multiprocessing.Lock()
     while value:
         server_ip = get_input("IP: ")
         port_num = get_input("Port: ")
@@ -45,15 +46,15 @@ def main():
         cnn_emo_queue = multiprocessing.Queue()
         cnn_img_queue = multiprocessing.Queue()
 
-        server = multiprocessing.Process(target=server_handler, args=(s,gui_queue))
+        server = multiprocessing.Process(target=server_handler, args=(lock,s,gui_queue))
         jobs.append(server)
         server.start()
 
-        message = multiprocessing.Process(target=message_handler, args=(s,client_queue, cnn_emo_queue))
+        message = multiprocessing.Process(target=message_handler, args=(lock,s,client_queue, cnn_emo_queue))
         jobs.append(message)
         message.start()
 
-        cnn =  multiprocessing.Process(target=cnn_handler, args=(cnn_img_queue,cnn_emo_queue))
+        cnn =  multiprocessing.Process(target=cnn_handler, args=(lock,cnn_img_queue,cnn_emo_queue))
         jobs.append(cnn)
         cnn.start()
 
@@ -95,12 +96,13 @@ def main():
             window.after(10, update_msg)
 
         def show_webcam():
-            if cnn_img_queue.empty() == False:
-                image = Image.open('emotion.jpg')
-                tkimage = ImageTk.PhotoImage(image)
-                label2.image = tkimage
-                label2.configure(image=tkimage)
-                label2.pack()
+            lock.acquire()
+            image = Image.open('emotion.jpg')
+            lock.release()
+            tkimage = ImageTk.PhotoImage(image)
+            label2.image = tkimage
+            label2.configure(image=tkimage)
+            label2.pack()
 
             window.after(10, show_webcam)
 
@@ -122,7 +124,7 @@ def main():
         window.mainloop()
 
 
-def server_handler(sock,gui_queue):
+def server_handler(l,sock,gui_queue):
     while True:
         encodedmsg = sock.recv(BUFF_SIZE)
         msg = encodedmsg.decode('utf-8')
@@ -152,7 +154,7 @@ def server_handler(sock,gui_queue):
             return
 
 
-def message_handler(sock, client_queue, cnn_emo_queue):
+def message_handler(l, sock, client_queue, cnn_emo_queue):
     try:
         address = ""
         while True:
@@ -183,7 +185,7 @@ def message_handler(sock, client_queue, cnn_emo_queue):
         sock.close()
 
 
-def cnn_handler (cnn_img_queue, cnn_emo_queue):
+def cnn_handler (l, cnn_img_queue, cnn_emo_queue):
     import cv2
     import pygame
     import pygame.camera
@@ -249,8 +251,10 @@ def cnn_handler (cnn_img_queue, cnn_emo_queue):
 
     def getimage(camera, screen):
         scrncap = camera.get_image(screen)
+        l.acquire()
         pygame.image.save(scrncap, 'emotion.jpg')
         image = cv2.imread('emotion.jpg')
+        l.release()
         return image
 
 
